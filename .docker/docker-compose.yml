@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+  qsentry-anon:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    container_name: qsentry-feeds-anon
+    image: qsentry-feeds:latest
+    restart: unless-stopped
+    environment:
+      - QSENTRY_TOKEN
+      - QSENTRY_FEED=anon
+      - QSENTRY_FORMAT=zeek
+      - RUN_INTERVAL=21600
+    volumes:
+      - ./feeds:/feeds
+
+  qsentry-mal-hosts:
+    container_name: qsentry-feeds-mal
+    image: qsentry-feeds:latest
+    environment:
+      - QSENTRY_TOKEN
+      - QSENTRY_FEED=mal_hosting
+      - QSENTRY_FORMAT=zeek
+      - RUN_INTERVAL=21600
+    volumes:
+      - ./feeds:/feeds
+
+#  checkpoint-anon:
+#    container_name: qsentry-feeds-checkpoint
+#    image: qsentry-feeds:latest
+#    restart: unless-stopped
+#    environment:
+#      - QSENTRY_TOKEN
+#      - QSENTRY_FEED=anon
+#      - QSENTRY_FORMAT=checkpoint
+#      - RUN_INTERVAL=21600
+#    volumes:
+#      - ./feeds:/feeds

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+echo -e "[$(TZ=${5} date +%D" "%H:%M:%S" "%Z)] Pulling the ${FEED} feed, checks every ${RUN_INTERVAL} seconds and exporting a ${FORMAT} feed file."
+
+if [[ ${QSENTRY_TOKEN} == '' ]]; then
+  echo "[$(TZ=${5} date +%D" "%H:%M" "%Z)] QSENTRY_TOKEN envvar not set, exiting container"|tee -a ${logdest}
+  exit 1
+fi
+
+while :;do
+  echo -e "[$(TZ=${5} date +%D"-"%H:%M:%S"-"%Z)] pulling the feed"
+
+  cd /qintel/
+  python qsentry_feeds.py
+
+  # find and remove feeds over 3 days old
+  find /feeds/ -mtime +3 -exec rm -rf {} \;
+
+  # sleep for an hour and then try again
+  sleep ${RUN_INTERVAL}
+done
