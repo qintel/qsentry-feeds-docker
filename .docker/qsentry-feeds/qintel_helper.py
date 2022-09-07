@@ -1,4 +1,4 @@
-# Copyright (c) 2009-2021 Qintel, LLC
+# Copyright (c) 2009-2022 Qintel, LLC
 # Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)
 
 from urllib.request import Request, urlopen
@@ -11,7 +11,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 from gzip import GzipFile
 
-VERSION = '1.0.0'
+VERSION = '1.0.2'
 USER_AGENT = 'integrations-helper'
 MAX_RETRY_ATTEMPTS = 5
 
@@ -23,7 +23,7 @@ REMOTE_MAP = {
     'pmi': 'https://api.pmi.qintel.com',
     'qwatch': 'https://api.qwatch.qintel.com',
     'qauth': 'https://api.qauth.qintel.com',
-    'qsentry_feed': 'https://qsentry.qintel.com',
+    'qsentry_feed': 'https://apiv3.qsentry.qintel.com',
     'qsentry': 'https://api.qsentry.qintel.com'
 }
 
@@ -102,7 +102,7 @@ def _search(**kwargs):
             sleep(wait_time)
 
         else:
-            raise Exception(f'Max API retries exceeded')
+            raise Exception('Max API retries exceeded')
 
         request_attempts += 1
 
@@ -188,7 +188,8 @@ def search_qwatch(search_term, search_type, query_type, **kwargs):
     kwargs['token'] = kwargs.get('token', os.getenv('QWATCH_TOKEN'))
 
     params = kwargs.get('params', {})
-    params.update({search_type: search_term})
+    if search_type:
+        params.update({search_type: search_term})
     kwargs['params'] = params
 
     return loads(_search(**kwargs).read())
